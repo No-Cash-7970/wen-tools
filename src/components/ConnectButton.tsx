@@ -127,17 +127,9 @@ export default function ConnectButton({
     }
   }, [activeAddress, algodClient]);
 
-<<<<<<< HEAD
-<<<<<<< HEAD
   // This is for authenticating with Crust, which is needed for some of the tools (Simple Mint,
   // Simple Update, etc.)
   useEffect(() => {
-<<<<<<< HEAD
-=======
-  // This is for authenticating with Crust, which is needed for some of the tools (Simple Mint,
-  // Simple Update, etc.)
-  useEffect(() => {
->>>>>>> a82abb4 (Skip Crust authentication when connecting wallet (#127))
     // Only Pera supports signing the arbitrary bytes, which is needed for Crust authentication
     if (activeWallet?.id !== WalletId.PERA) return;
 
@@ -151,20 +143,6 @@ export default function ConnectButton({
           localStorage.setItem("authBasic", authBasic ?? '');
           console.log("------------crust auth success: ", authBasic);
           // toast.success("Crust authentication success!")
-<<<<<<< HEAD
-=======
-    if (activeAddress) {
-      // Already authenticated or the authentication was rejected. Do nothing.
-      if (isCrustAuth() || isCrustAuthFail()) return
-
-      signLoginAlgorandForCrustIpfsEndpoint(activeAddress, signTransactions, algodClient)
-        .then(authBasic => {
-          localStorage.setItem("authBasic", authBasic ?? '');
-          console.log("------------crust auth success: ", authBasic);
-          toast.success("Crust authentication success!")
->>>>>>> 4b5229c (Fix Crust Authentication issues (#125))
-=======
->>>>>>> a82abb4 (Skip Crust authentication when connecting wallet (#127))
         })
         .catch((err: any) => {
           localStorage.setItem("authBasicFail", "true")
@@ -174,11 +152,6 @@ export default function ConnectButton({
     }
   }, [activeWallet, activeAddress])
 
-<<<<<<< HEAD
-=======
->>>>>>> d01c566 (Revert "Fix Crust Authentication issues (#125)" (#126))
-=======
->>>>>>> a82abb4 (Skip Crust authentication when connecting wallet (#127))
   return (
     <div className={
       "flex flex-row justify-center items-center font-sans rounded-2xl mx-2"
