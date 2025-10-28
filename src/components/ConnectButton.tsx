@@ -24,7 +24,7 @@ export default function ConnectButton({
   /** If this connect button is to be in the main part of the page (not in the header) */
   inmain?: boolean
 }) {
-  const { activeAddress, activeWallet, algodClient, wallets } = useWallet();
+  const { activeAddress, activeWallet, algodClient, wallets, signTransactions } = useWallet();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   // wallet
@@ -130,6 +130,7 @@ export default function ConnectButton({
   // This is for authenticating with Crust, which is needed for some of the tools (Simple Mint,
   // Simple Update, etc.)
   useEffect(() => {
+<<<<<<< HEAD
     // Only Pera supports signing the arbitrary bytes, which is needed for Crust authentication
     if (activeWallet?.id !== WalletId.PERA) return;
 
@@ -143,6 +144,17 @@ export default function ConnectButton({
           localStorage.setItem("authBasic", authBasic ?? '');
           console.log("------------crust auth success: ", authBasic);
           // toast.success("Crust authentication success!")
+=======
+    if (activeAddress) {
+      // Already authenticated or the authentication was rejected. Do nothing.
+      if (isCrustAuth() || isCrustAuthFail()) return
+
+      signLoginAlgorandForCrustIpfsEndpoint(activeAddress, signTransactions, algodClient)
+        .then(authBasic => {
+          localStorage.setItem("authBasic", authBasic ?? '');
+          console.log("------------crust auth success: ", authBasic);
+          toast.success("Crust authentication success!")
+>>>>>>> 4b5229c (Fix Crust Authentication issues (#125))
         })
         .catch((err: any) => {
           localStorage.setItem("authBasicFail", "true")
