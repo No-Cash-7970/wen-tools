@@ -13,7 +13,7 @@ import { useWallet, WalletId } from "@txnlab/use-wallet-react";
 
 // ** Wallet Imports
 import { PeraWalletConnect } from "@perawallet/connect";
-import { isCrustAuth, isCrustAuthFail, signLoginAlgorandForCrustIpfsEndpoint } from "../crust-auth";
+import { signLoginAlgorandForCrustIpfsEndpoint } from "../crust-auth";
 
 import { FaCopy, FaWallet } from "react-icons/fa";
 import { toast } from "react-toastify";
@@ -24,7 +24,7 @@ export default function ConnectButton({
   /** If this connect button is to be in the main part of the page (not in the header) */
   inmain?: boolean
 }) {
-  const { activeAddress, activeWallet, algodClient, wallets, signTransactions } = useWallet();
+  const { activeAddress, activeWallet, algodClient, wallets } = useWallet();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   // wallet
@@ -52,12 +52,22 @@ export default function ConnectButton({
 
   const connectToPera = async () => {
     handleClose();
-
     try {
-      await wallets.find((w) => w.id === "pera")?.connect();
+      const accts = await wallets.find((w) => w.id === "pera")?.connect();
+      const addr = accts?.[0].address;
+      if (!addr) throw Error("Invalid Address");
+      const authBasic = await signLoginAlgorandForCrustIpfsEndpoint(addr);
+
+      // continue when connect & signLoginAlgorandForCrustIpfsEndpoint sucess
+      localStorage.setItem("authBasic", authBasic);
+
+      console.log("------------crust auth success: ", authBasic);
+
       toast.success("Connected!");
-    } catch {
+    } catch (err) {
+      console.error(err);
       toast.error("Failed to connect!");
+      clearLoginState(); // clear when crust auth fail
     }
   };
 
@@ -106,7 +116,6 @@ export default function ConnectButton({
   const clearLoginState = async () => {
     activeWallet?.disconnect();
     localStorage.removeItem("authBasic");
-    localStorage.removeItem("authBasicFail");
   };
 
   const disconnect = async () => {
@@ -127,6 +136,7 @@ export default function ConnectButton({
     }
   }, [activeAddress, algodClient]);
 
+<<<<<<< HEAD
   // This is for authenticating with Crust, which is needed for some of the tools (Simple Mint,
   // Simple Update, etc.)
   useEffect(() => {
@@ -164,6 +174,8 @@ export default function ConnectButton({
     }
   }, [activeWallet, activeAddress])
 
+=======
+>>>>>>> d01c566 (Revert "Fix Crust Authentication issues (#125)" (#126))
   return (
     <div className={
       "flex flex-row justify-center items-center font-sans rounded-2xl mx-2"

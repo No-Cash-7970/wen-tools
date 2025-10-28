@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { bytesToBase64 } from "./utils";
 =======
 import algosdk from "algosdk";
@@ -157,6 +158,47 @@ export async function signLoginAlgorandForCrustIpfsEndpoint(
 >>>>>>> 4b5229c (Fix Crust Authentication issues (#125))
 export function isCrustAuthFail() {
   return !!localStorage.getItem('authBasicFail');
+=======
+import { peraWallet } from "./utils";
+
+export const CRUST_DEBUG = false;
+
+// Algorand wallet
+export async function signLoginAlgorandForCrustIpfsEndpoint(address: string) {
+  const u: any = {
+    account: address,
+    wallet: "algorand",
+  };
+  const msg =
+    u.wallet === "near" ||
+    u.wallet === "aptos-martian" ||
+    u.wallet === "aptos-petra" ||
+    u.wallet === "web3auth"
+      ? u.pubKey || ""
+      : u.account;
+  const prefix = getPerfix(u);
+  // use remark as singmsg
+  await peraWallet.reconnectSession();
+  return peraWallet
+    .signData([{ data: Buffer.from(msg), message: "For login" }], u.account)
+    .then((signedData) => {
+      //@ts-expect-error didn't write this, not touching it
+      return window.btoa(String.fromCharCode.apply(null, signedData[0]));
+    })
+    .then((signature) => {
+      if (signature.length) {
+        const perSignData =
+          u.wallet === "elrond" ? signature : `${prefix}-${msg}:${signature}`;
+        const base64Signature = window.btoa(perSignData);
+        const authBasic = `${base64Signature}`;
+        return authBasic;
+      }
+      return "";
+    })
+    .catch((err: any) => {
+      throw Error("Algorand wallet signMessage error: " + err.message);
+    });
+>>>>>>> d01c566 (Revert "Fix Crust Authentication issues (#125)" (#126))
 }
 
 export function isCrustAuth() {
@@ -168,7 +210,7 @@ export function isCrustAuth() {
   return true;
 }
 
-const getPrefix = (user: UserData) => {
+const getPerfix = (user: any) => {
   if (
     user.wallet.startsWith("metamask") ||
     user.wallet === "metax" ||
@@ -205,10 +247,8 @@ const getPrefix = (user: UserData) => {
   if (user.wallet === "aptos-petra") {
     return "aptos";
   }
-
   if (user.wallet === "ton-connect") {
     return "ton";
   }
-
   return "substrate";
 };
