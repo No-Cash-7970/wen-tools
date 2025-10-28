@@ -13,7 +13,7 @@ import { useWallet, WalletId } from "@txnlab/use-wallet-react";
 
 // ** Wallet Imports
 import { PeraWalletConnect } from "@perawallet/connect";
-import { signLoginAlgorandForCrustIpfsEndpoint } from "../crust-auth";
+import { isCrustAuth, isCrustAuthFail, signLoginAlgorandForCrustIpfsEndpoint } from "../crust-auth";
 
 import { FaCopy, FaWallet } from "react-icons/fa";
 import { toast } from "react-toastify";
@@ -52,22 +52,12 @@ export default function ConnectButton({
 
   const connectToPera = async () => {
     handleClose();
+
     try {
-      const accts = await wallets.find((w) => w.id === "pera")?.connect();
-      const addr = accts?.[0].address;
-      if (!addr) throw Error("Invalid Address");
-      const authBasic = await signLoginAlgorandForCrustIpfsEndpoint(addr);
-
-      // continue when connect & signLoginAlgorandForCrustIpfsEndpoint sucess
-      localStorage.setItem("authBasic", authBasic);
-
-      console.log("------------crust auth success: ", authBasic);
-
+      await wallets.find((w) => w.id === "pera")?.connect();
       toast.success("Connected!");
-    } catch (err) {
-      console.error(err);
+    } catch {
       toast.error("Failed to connect!");
-      clearLoginState(); // clear when crust auth fail
     }
   };
 
@@ -116,6 +106,7 @@ export default function ConnectButton({
   const clearLoginState = async () => {
     activeWallet?.disconnect();
     localStorage.removeItem("authBasic");
+    localStorage.removeItem("authBasicFail");
   };
 
   const disconnect = async () => {
@@ -137,10 +128,16 @@ export default function ConnectButton({
   }, [activeAddress, algodClient]);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   // This is for authenticating with Crust, which is needed for some of the tools (Simple Mint,
   // Simple Update, etc.)
   useEffect(() => {
 <<<<<<< HEAD
+=======
+  // This is for authenticating with Crust, which is needed for some of the tools (Simple Mint,
+  // Simple Update, etc.)
+  useEffect(() => {
+>>>>>>> a82abb4 (Skip Crust authentication when connecting wallet (#127))
     // Only Pera supports signing the arbitrary bytes, which is needed for Crust authentication
     if (activeWallet?.id !== WalletId.PERA) return;
 
@@ -154,6 +151,7 @@ export default function ConnectButton({
           localStorage.setItem("authBasic", authBasic ?? '');
           console.log("------------crust auth success: ", authBasic);
           // toast.success("Crust authentication success!")
+<<<<<<< HEAD
 =======
     if (activeAddress) {
       // Already authenticated or the authentication was rejected. Do nothing.
@@ -165,6 +163,8 @@ export default function ConnectButton({
           console.log("------------crust auth success: ", authBasic);
           toast.success("Crust authentication success!")
 >>>>>>> 4b5229c (Fix Crust Authentication issues (#125))
+=======
+>>>>>>> a82abb4 (Skip Crust authentication when connecting wallet (#127))
         })
         .catch((err: any) => {
           localStorage.setItem("authBasicFail", "true")
@@ -174,8 +174,11 @@ export default function ConnectButton({
     }
   }, [activeWallet, activeAddress])
 
+<<<<<<< HEAD
 =======
 >>>>>>> d01c566 (Revert "Fix Crust Authentication issues (#125)" (#126))
+=======
+>>>>>>> a82abb4 (Skip Crust authentication when connecting wallet (#127))
   return (
     <div className={
       "flex flex-row justify-center items-center font-sans rounded-2xl mx-2"
